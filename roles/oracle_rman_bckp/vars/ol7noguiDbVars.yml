@@ -1,0 +1,29 @@
+---
+  
+databases:
+  - db_name: orcl
+    parallelism: 2
+    fullBckpDays:
+      - Monday
+    incBckpDays:
+      - Tuesday
+      - Thursday
+      - Friday
+      - Saturday
+      - Sunday
+    incBkpLvl: 1
+    cmltvBckpDays:
+      - Wednesday
+  - db_name: orcl2
+    parallelism: 2
+    fullBckpDays:
+      - Monday
+    incBckpDays:
+      - Tuesday
+      - Thursday
+      - Friday
+      - Saturday
+      - Sunday
+    incBkpLvl: 1
+    cmltvBckpDays:
+      - Wednesday

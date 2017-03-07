@@ -1,0 +1,36 @@
+---
+
+  - include_vars:
+      file: "{{ inventory_hostname }}DbVars.yml"
+
+  - name: Ensure that all mandatory variables are defined
+    fail: msg="Variable '{{ item }}' is not defined" 
+    when: item not in hostvars[inventory_hostname] 
+    with_items: 
+      - databases
+
+  - name: Iterate over each Database in turn and display their names
+    debug: msg="database:db_name={{item.db_name}}"
+    with_items: "{{ databases }}"
+
+  - name: Display Todays Date
+    debug: msg="Today is '{{ ansible_date_time.weekday }}' I think"
+
+  - name: Run the Required Full Database Backups
+    script: "files/rmanBckp.pl -s '{{item.db_name}}' -l 0 -p '{{item.parallelism}}' -t full"
+    with_items: "{{ databases }}"
+    when:  '"{{ ansible_date_time.weekday }}" in "{{item.fullBckpDays}}"'
+
+  - name: Run the Required Incremental  Database Backups
+    script: "files/rmanBckp.pl -s '{{item.db_name}}' -l '{{item.incBkpLvl}}' -p '{{item.parallelism}}' -t inc"
+    with_items: "{{ databases }}"
+    when:  '"{{ ansible_date_time.weekday }}" in "{{item.incBckpDays}}"'
+
+  - name: Run the Required Cumulative Incremental  Database Backups
+    script: "files/rmanBckp.pl -s '{{item.db_name}}' -l '{{item.incBkpLvl}}' -p '{{item.parallelism}}' -t cmltv"
+    with_items: "{{ databases }}"
+    when:  '"{{ ansible_date_time.weekday }}" in "{{item.cmltvBckpDays}}"'
+
+
+
+

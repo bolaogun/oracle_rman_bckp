@@ -1,0 +1,22 @@
+---
+#oradb.yml : playbook for oradb servers
+- hosts: oradb
+  remote_user: oracle
+  pre_tasks: 
+    - stat: path={{lock_file_path}}
+      register: lock_file
+
+    - fail: msg="Sorry, I found a lockfile, so I'm assuming that someone was already running this playbook. Add -f to your command to forcefully continue deploying, if the previous deploy was aborted."
+      when: lock_file.stat.exists|bool and not "{{ force_ignore_lock }}"|bool
+
+    - file: path={{lock_file_path}} state=absent
+      #sudo: yes
+      when: "{{force_ignore_lock}}"
+
+    - file: path={{lock_file_path}} state=touch
+      #become_user: yes
+  roles:
+  - oracle_rman_bckp
+  post_tasks:
+    - file: path={{lock_file_path}} state=absent
+     #sudo: yes

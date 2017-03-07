@@ -1,0 +1,4 @@
+---
+# site.yml : This is a sitewide playbook
+# It is used to backup ORACLE DBs using RMAN
+- include: oradb.yml
